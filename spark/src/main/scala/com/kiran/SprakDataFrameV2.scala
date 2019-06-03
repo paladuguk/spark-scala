@@ -11,32 +11,25 @@ import org.apache.spark.sql.SparkSession
 
 object SprakDataFrameV2 {
 
-
 	def main(args: Array[String]) : Unit = {
 
+		val sparkSession = SparkSession
+			.builder()
+			.appName("Spark DataFrame V2")
+			.master("local")
+			.getOrCreate()
 
-			val sparkSession = SparkSession
-					.builder()
-					.appName("Spark DataFrame V2")
-					.master("local")
-					.getOrCreate()
+		val sqlContext = sparkSession.sqlContext
 
+		val rdd = sparkSession.sparkContext.parallelize(Array(6,7,8,9,10))
 
-					val sqlContext = sparkSession.sqlContext
+		val schema = StructType(StructField("Numbers", IntegerType, false) 
+					:: Nil)
 
-					val rdd = sparkSession.sparkContext.parallelize(Array(6,7,8,9,10))
+		val rowRDD = rdd.map(line => Row(line))
 
-					val schema = StructType(
-							StructField("Numbers", IntegerType, false) :: Nil
-							)
+		val df = sqlContext.createDataFrame(rowRDD, schema)
 
-					val rowRDD = rdd.map(line => Row(line))
-
-					val df = 	sqlContext.createDataFrame(rowRDD, schema)
-
-					df.show()
-
-
-
+		df.show()
 	}
 }
